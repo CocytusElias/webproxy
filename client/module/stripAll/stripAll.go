@@ -11,7 +11,7 @@ type Module struct {
 // Init 初始化方法。
 func Init() (module *Module, err error) {
 
-	return nil, nil
+	return &Module{}, nil
 }
 
 // Handle 处理方法。

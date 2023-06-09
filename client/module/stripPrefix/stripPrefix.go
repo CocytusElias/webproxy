@@ -11,7 +11,7 @@ type Module struct {
 // Init 初始化方法。
 func Init() (module *Module, err error) {
 
-	return nil, nil
+	return &Module{}, nil
 }
 
 // Handle 处理方法。
@@ -31,7 +31,7 @@ func (m *Module) Handle(wsReq *constant.WsReq, params ...any) (wsReqRewrite *con
 		wsReqRewrite.Path = wsReqRewrite.Path[strip:]
 	}
 
-	return wsReqRewrite, nil
+	return
 }
 
 // Verify 参数验证方法。
