@@ -112,34 +112,55 @@ maxRequestChannel = 300
 
 Client Configuration (`./config/client.toml`):
 ```toml
-# Service URL of the WebProxy, must start with ws:// or wss://.
-# If you want to use wss://, you need to add Nginx or Apache as a reverse proxy in front of the service and configure SSL certificates.
+# Service URL, must start with ws:// or wss://.
+# To enable wss://, you need to add nginx or apisix in front of the service and configure SSL certificates.
 # The URL path must be /proxy/chan.
 wsServiceUrl="ws://127.0.0.1:8080/proxy/chan"
-# Request timeout in seconds. Set to 15, which means if no response is received from the target service within 15 seconds from the request being sent, the request is aborted.
+# Request timeout in seconds. Setting it to 15 means that if no response is received from the target service within 15 seconds after the request is initiated from the client, the request will be terminated.
 timeoutSecond = 15
-
+# Request forwarding configuration, this is the second one and will be matched in order.
 [[routers]]
+    # Route matching using regular expression for paths starting with api.
     path="^/api"
+    # Request forwarding, the response from this service address will be returned to the service.
     upstream="http://192.168.0.1:8080"
 
+# Request forwarding configuration, this is the second one and will be matched in order.
 [[routers]]
+    # Route matching using regular expression for paths starting with wap.
     path="^/wap"
+    # Request forwarding, the response from this service address will be returned to the service.
     upstream="http://192.168.0.1:8081"
+    # Request copy forwarding, these service addresses only handle requests, not responses.
     copyStreams=["http://192.168.0.1:8082","http://192.168.0.1:8083"]
 
+# Request forwarding configuration, this is the third one and will be matched in order.
 [[routers]]
+    # Route matching using regular expression for paths starting with web.
     path="^/web"
+    # Request forwarding, the response from this service address will be returned to the service.
     upstream="http://192.168.0.1:8081"
+    # Request copy forwarding, these service addresses only handle requests, not responses.
     copyStreams=["http://192.168.0.1:8082","http://192.168.0.1:8083"]
+    # Request rewrite modules to be executed in order when this route is matched.
+    # In this example, the "stripPrefix" module is executed with a parameter of 4.
+    # It removes the first four characters from the path. For example, if the request path is /web/user, the forwarded path will only be /user.
     [[routers.rewriteModules]]
         name="stripPrefix"
         params=[4]
 
+# Request forwarding configuration, this is the fourth one and will be matched in order.
 [[routers]]
+    # Route matching using regular expression for paths starting with oauth.
     path="^/oauth"
+    # Request forwarding, the response from this service address will be returned to the service.
     upstream="http://192.168.0.11:8081"
+    # Request copy forwarding, these service addresses only handle requests, not responses.
     copyStreams=["http://192.168.0.12:8082","http://192.168.0.13:8083"]
+    # Request rewrite modules to be executed in order when this route is matched.
+    # It first uses the "stripPrefix" module with a parameter of 6, and then uses the "stripSuffix" module with a parameter of 4.
+    # It removes the first 6 characters and the last 4 characters from the path.
+    # For example, if the request path is /oauth/user/login?a=1, the forwarded path will be /user/login.
     [[routers.rewriteModules]]
         name="stripPrefix"
         params=[6]
@@ -147,20 +168,34 @@ timeoutSecond = 15
         name="stripSuffix"
         params=[4]
 
+# Request forwarding configuration, this is the fifth one and will be matched in order.
 [[routers]]
+    # Route matching using regular expression for paths starting with all.
     path="^/all"
+    # Request forwarding, the response from this service address will be returned to the service.
     upstream="http://192.168.0.1:8081"
+    # Request copy forwarding, these service addresses only handle requests, not responses.
     copyStreams=["http://192.168.0.1:8082","http://192.168.0.1:8083"]
+    # Request rewrite modules to be executed in order when this route is matched.
+    # It executes the "stripAll" module with a parameter of "/hello/world".
+    # It replaces the entire path with "/hello/world".
+    # For example, if the request path is /all/user/category, it will be rewritten as /hello/world.
     [[routers.rewriteModules]]
         name="stripAll"
         params=["/hello/world"]
 
+# Request forwarding configuration, this is the fifth one and will be matched in order.
 [[routers]]
+    # Route matching, accepts all requests.
     path=".*"
+    # Request forwarding, the response from this service address will be returned to the service.
     upstream="http://192.168.0.1:8081"
-    copyStreams=["http://192.168.0.1:8082","http://192
-
-.168.0.1:8083"]
+    # Request copy forwarding, these service addresses only handle requests, not responses.
+    copyStreams=["http://192.168.0.1:8082","http://192.168.0.1:8083"]
+    # Request rewrite modules to be executed in order when this route is matched.
+    # It executes the "stripAll" module with an empty string parameter.
+    # It discards the entire path.
+    # For example, if the request path is /all/user/category, it will be rewritten as /.
     [[routers.rewriteModules]]
         name="stripAll"
         params=[""]
@@ -223,27 +258,27 @@ Let's take an example of creating a module named `regex` for performing regex-ba
    
    // Init initializes the module.
    func Init() (module *Module, err error) {
-   	module = &Module{}
+   	 module = &Module{}
      
      // Write your initialization logic here
      ... ...
    	
-   	return module, nil
+   	 return module, nil
    }
    
    // Handle handles the request.
    func (m *Module) Handle(wsReq *constant.WsReq, params ...any) (wsReqRewrite *constant.WsReqRewrite, err error) {
      	wsReqRewrite = &constant.WsReqRewrite{
-   		Method: wsReq.Method,
-   		Header: wsReq.Header,
-   		Body:   wsReq.Body,
-   		Path:   wsReq.Path,
-   	}
+   		  Method: wsReq.Method,
+   		  Header: wsReq.Header,
+   		  Body:   wsReq.Body,
+   		  Path:   wsReq.Path,
+   	    }
+		   
+        // Write your processing logic here
+		... ...
      
-     // Write your processing logic here
-     ... ...
-     
-   	return
+   	    return
    }
    
    // Verify performs parameter validation.
@@ -252,7 +287,7 @@ Let's take an example of creating a module named `regex` for performing regex-ba
      // Write your parameter validation logic here
      ... ...
    
-   	return true
+   	 return true
    }
    ```
 
