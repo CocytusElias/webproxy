@@ -1,0 +1,47 @@
+wsServiceUrl="ws://127.0.0.1:8080/proxy/chan"
+timeoutSecond = 15
+[[routers]]
+    path="^/api" # 路由匹配
+    upstream="http://192.168.0.1:8080" # 请求转发
+
+[[routers]]
+    path="^/wap" # 路由匹配
+    upstream="http://192.168.0.1:8081" # 请求转发
+    copyStreams=["http://192.168.0.1:8082","http://192.168.0.1:8083"] # 请求拷贝转发
+
+[[routers]]
+    path="^/web" # 路由匹配
+    upstream="http://192.168.0.1:8081" # 请求转发
+    copyStreams=["http://192.168.0.1:8082","http://192.168.0.1:8083"] # 请求拷贝转发
+    [[routers.rewriteModules]] # 使用 stripPrefix 重写
+        name="stripPrefix"
+        params=[4]
+
+[[routers]]
+    path="^/test1" # 路由匹配
+    upstream="http://192.168.0.11:8081" # 请求转发
+    copyStreams=["http://192.168.0.12:8082","http://192.168.0.13:8083"] # 请求拷贝转发
+    # 先使用 stripPrefix 重写, 再使用 stripSuffix 重写
+    [[routers.rewriteModules]] # 使用 stripPrefix 重写
+        name="stripPrefix"
+        params=[4]
+    [[routers.rewriteModules]] # 使用 stripSuffix 重写
+        name="stripSuffix"
+        params=[4]
+
+[[routers]]
+    path="^/test2" # 路由匹配
+    upstream="http://192.168.0.1:8081" # 请求转发
+    copyStreams=["http://192.168.0.1:8082","http://192.168.0.1:8083"] # 请求拷贝转发
+    [[routers.rewriteModules]] # 使用 stripAll 完全重写整个 url
+        name="stripAll"
+        params=["/hey/this/is/a/test/path"]
+
+[[routers]]
+    path="^/test3" # 路由匹配
+    upstream="http://192.168.0.1:8081" # 请求转发
+    copyStreams=["http://192.168.0.1:8082","http://192.168.0.1:8083"] # 请求拷贝转发
+    [[routers.rewriteModules]] # 使用 stripAll 完全消除整个 url
+        name="stripAll"
+        params=[""]
+

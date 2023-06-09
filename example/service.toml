@@ -1,0 +1,4 @@
+timeoutSecond = 30
+addr = '0.0.0.0:8080'
+maxRequest = 3000
+maxRequestChannel = 300
