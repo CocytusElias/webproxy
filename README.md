@@ -1,13 +1,5 @@
 # WebProxy
 
-![standard-readme compliant](https://static.elias.ink/resource/202306092335092.svg)
-![standard-readme compliant](https://static.elias.ink/resource/202306092335497.svg)
-![standard-readme compliant](https://static.elias.ink/resource/202306092335909.svg)
-![standard-readme compliant](https://static.elias.ink/resource/202306092335041.svg)
-![standard-readme compliant](https://static.elias.ink/resource/202306092335423.svg)
-
-
-
 This is a lightweight intranet tunneling tool that only supports HTTP. It is not more powerful than [Ngrok](https://github.com/inconshreveable/ngrok) or [Frp](https://github.com/fatedier/frp). If you need a more powerful intranet tunneling and proxy tool, it is recommended to use other tools.
 
 ## Table of Contents
@@ -316,4 +308,4 @@ Let's take an example of creating a module named `regex` for performing regex-ba
 
 ## Maintainer
 
-[@eliassama](https://github.com/eliassama)
+[@CocytusElias](https://github.com/CocytusElias)
